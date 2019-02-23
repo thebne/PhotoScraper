@@ -18,6 +18,7 @@ def main(url):
     conn.commit()
 
     repeats = 0
+    downloaded = 0
     while repeats < MAX_REPEATS_BEFORE_STOP:
         img = requests.get(url, stream=True)
         binary = img.raw.read()
@@ -33,9 +34,10 @@ def main(url):
         repeats = 0
 
         c.execute("INSERT INTO hashes (md5, image) VALUES (?, ?)",
-                  (md5, binary))
+                  (md5, buffer(binary)))
         conn.commit()
-        print("Fetched image")
+        downloaded += 1
+        print("Fetched image #{}".format(downloaded))
 
 
 if __name__ == '__main__':
